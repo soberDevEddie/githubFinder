@@ -2,7 +2,7 @@ import { FaClock, FaUser } from 'react-icons/fa';
 import { useQueryClient } from '@tanstack/react-query';
 
 
-import { fetchGitubUser } from '../api/github';
+import { fetchGithubUser } from '../api/github';
 
 type RecentSearchesProps = {
   users: string[];
@@ -27,7 +27,7 @@ const RecentSearches = ({ users, onSelect }: RecentSearchesProps) => {
               onMouseEnter={() => {
                 queryClient.prefetchQuery({
                   queryKey: ['users', user],
-                  queryFn: () => fetchGitubUser(user),
+                  queryFn: () => fetchGithubUser(user),
                 });
               }}
             >

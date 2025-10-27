@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { FaGithubAlt } from 'react-icons/fa';
 
 import { fetchGitubUser } from '../api/github';
+import UserCard from './UserCard';
 
 const UserSearch = () => {
   const [username, setUsername] = useState('');
@@ -34,9 +34,7 @@ const UserSearch = () => {
       {isLoading && <p className='status'>Loading</p>}
       {isError && <p className='status error'>{error.message}</p>}
 
-      {data && (
-        
-      )}
+      {data && <UserCard user={data} />}
     </>
   );
 };

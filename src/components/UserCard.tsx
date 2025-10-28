@@ -1,7 +1,12 @@
 import { FaGithubAlt, FaUserMinus, FaUserPlus } from 'react-icons/fa';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-import { checkIfFollowingUser, followGithubUser } from '../api/github';
+import {
+  checkIfFollowingUser,
+  followGithubUser,
+  unfollowGithubUser,
+} from '../api/github';
 import type { GithubUser } from '../types';
 
 const UserCard = ({ user }: { user: GithubUser }) => {
@@ -16,21 +21,33 @@ const UserCard = ({ user }: { user: GithubUser }) => {
   const followMutation = useMutation({
     mutationFn: () => followGithubUser(user.login),
     onSuccess: () => {
-      console.log(`You are now following ${user.login}`);
+      toast.success(`You are now following ${user.login}`);
       refetch();
     },
     onError: (err) => {
-      console.error('Error following user:', err.message);
+      toast.error(err.message);
+    },
+  });
+
+  // Mutation to unfollow the user
+  const unfollowMutation = useMutation({
+    mutationFn: () => unfollowGithubUser(user.login),
+    onSuccess: () => {
+      toast.success(`You are no longer following ${user.login}`);
+      refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message);
     },
   });
 
   const handleFollow = () => {
-    if(isFollowing) {
-      // @todo unfollow
+    if (isFollowing) {
+      unfollowMutation.mutate();
     } else {
       followMutation.mutate();
     }
-  }
+  };
 
   return (
     <div className='user-card'>
@@ -39,7 +56,11 @@ const UserCard = ({ user }: { user: GithubUser }) => {
       <p className='bio'>{user.bio}</p>
 
       <div className='user-card buttons'>
-        <button onClick={handleFollow} className={`follow-btn ${isFollowing ? 'following' : ''} `}>
+        <button
+          disabled={followMutation.isPending || unfollowMutation.isPending}
+          onClick={handleFollow}
+          className={`follow-btn ${isFollowing ? 'following' : ''} `}
+        >
           {isFollowing ? (
             <>
               <FaUserMinus className='follow-icon' /> Following
